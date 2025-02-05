@@ -12,7 +12,7 @@ L'objectif du projet était de répondre à trois questions sur le dataset, de d
 Pour répondre à cette question, nous commençons par créer un rdd contenant uniquement les colonnes nécessaires : titre de la musique, artiste(s), et popularité.
 Ensuite, il nous suffit de trier la colonne popularité par ordre décroissant, avec la fonction `sortBy()`. Puis nous ne conservons que les 10 meilleures chansons, à l'aide de `take(10)`, et enfin nous affichons la liste obtenue.
 
-Résultat :
+Résultat :  
 ![best_musics](images/best_musics.png)
 ### Question 2 : Quels sont les genres les plus rapides (tempo) ?
 Nous commençons par créer deux rdd :
