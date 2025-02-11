@@ -23,7 +23,7 @@ object app extends App {
     case class Trip(ride_id : String,rideable_type: String,started_at: Long,ended_at: Long,member_casual: String)
     case class Station(station_id: String, station_name: String, station_latitude: Double, station_longitude: Double)
 
-    //  2. On collecte les informations des stations dans deux rdd différentes
+    //  2. On collecte les informations des stations dans deux rdd différents
     val start_stations = trips.map(line => line.split(","))
             .map(fields => (fields(4), fields(5), fields(8), fields(9)))
     val end_stations = trips.map(line => line.split(","))
@@ -46,7 +46,7 @@ object app extends App {
         (Edge(stationMap(row(5)), stationMap(row(7)), Trip(row(0), row(1), helper.timeToLong(row(2)), helper.timeToLong(row(3)), row(12))))
     }
 
-    //  5. On construit le graphe à l'iade de nos deux RDD Vertex et Edge
+    //  5. On construit le graphe à l'aide de nos deux RDD Vertex et Edge
     val graph : Graph[Station, Trip] = Graph(stationsRDD, tripsRDD)
 
     graph.vertices.collect()
@@ -54,7 +54,7 @@ object app extends App {
 
     // ----------------- 2. Calcul de degré -----------------
 
-    /*  1. On extrait le sous-graphe des trajets situés entre le 5/12/2021, et le 25/12/2021
+    /*  1. On extrait le sous-graphe des trajets situés entre le 5/12/2021 et le 25/12/2021
         On utilise pour cela la fonction helper.timeToLong()
     */
     graph.subgraph(trip => (trip.attr.started_at > helper.timeToLong("2021-12-05 00:00:00") && trip.attr.ended_at < helper.timeToLong("2021-12-25 00:00:00")))
@@ -76,7 +76,7 @@ object app extends App {
         (station.station_name, count)
     }
 
-    //  3. Enfin, on trie par ordre décroissant et on prend les 10 premières stations, et on affiche
+    //  3. Enfin, on trie par ordre décroissant, on prend les 10 premières stations, et on affiche
 
     val top10leaving = leavingTripsWithNames.sortBy(_._2, ascending = false).take(10)
     val top10entering = enteringTripsWithNames.sortBy(_._2, ascending = false).take(10)
@@ -196,7 +196,7 @@ object app extends App {
         (City Hall,93000.0)
     */
 
-    // 4- Bonus, plus court chemin
+    //  ----------- 4. Bonus, plus court chemin  --------------
     /*
         Pour ce bonus, l'objectif est de trouver le plus court chemin entre JC013 et toutes les autres stations du graphe,
         parfois en passant par d'autres stations si elles ne sont pas directement reliées.
