@@ -26,8 +26,8 @@ Voici la commande que nous lançons :
 val mean_popularity_by_key = total_popularity_by_key.map(p => (p._1, p._2 / nbr_music_by_key.filter(y => y._1 == p._1)(0)._2))
 ```
 
-Pour finir, on trie les moyennes par ordre décroissant, et on affiche les genres du plus rapide au plus lent.
-Résultat :
+Pour finir, on trie les moyennes par ordre décroissant, et on affiche les genres du plus rapide au plus lent.  
+Résultat :  
 ![fastest_genres](images/fastest_genre.png)
 ### Question 3 : Quelles musiques recommander en fonction des préférences de l'utilisateur ?
 Pour cette question, nous avons choisi de demander à l'utilisateur de rentrer ses préférences concernant différentes composantes d'une musique (tempo, energy, acousticness), puis de lui recommander les musiques qui correspondent le mieux à ses choix.
