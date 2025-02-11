@@ -84,11 +84,46 @@ object app extends App {
     println("\nTop 10 stations with the most leaving trips\n")
     top10leaving.foreach(println)
 
+    /* Résultat :
+        Top 10 stations with the most leaving trips
+
+        (Grove St PATH,2355)
+        (Hoboken Terminal - River St & Hudson Pl,2111)
+        (Sip Ave,1670)
+        (Hoboken Terminal - Hudson St & Hudson Pl,1640)
+        (Newport PATH,1298)
+        (Hamilton Park,1290)
+        (City Hall - Washington St & 1 St,1242)
+        (South Waterfront Walkway - Sinatra Dr & 1 St,1233)
+        (Newport Pkwy,1206)
+        (Marin Light Rail,1087)
+    */
+
     println("&\nTop 10 stations with the most entering trips\n")
     top10entering.foreach(println)
 
+    /* Résultat :
+        Top 10 stations with the most entering trips
+
+        (Grove St PATH,2375)
+        (Hoboken Terminal - River St & Hudson Pl,2026)
+        (Hoboken Terminal - Hudson St & Hudson Pl,1677)
+        (Sip Ave,1518)
+        (Hamilton Park,1352)
+        (City Hall - Washington St & 1 St,1296)
+        (South Waterfront Walkway - Sinatra Dr & 1 St,1296)
+        (Newport PATH,1261)
+        (Newport Pkwy,1206)
+        (Hoboken Ave at Monmouth St,1126)
+    */
+
     // ---------------- 3. Proximité entre les stations : -------------
-    //  1. Distance la plus courte
+    /*  1. Distance la plus courte
+        Ici on utilise à nouveau la fonction aggregateMessage.
+        Cette fois, si aucune des stations du triplet (edge + 2 vertex) n'est JC013, on envoie la distance Double.maxValue (infini)
+        Sinon, on envoie la distance entre la station source et JC013, calculée à l'aide de helper.getDistKilometers.
+        On fait cela pour chaque triplet du graphe, et on garde à chaque fois la distance la plus courte.
+    */
 
     val distToJC013 = graph.aggregateMessages[Double](
     triplet => {
@@ -113,10 +148,21 @@ object app extends App {
         (station.station_name, count)
     }
 
-    distToJC013WithNames.sortBy(_._2).take(1).foreach(println)
+    // Pour finir, on trie par ordre croissant et on affiche la première station (la plus proche de JC013).
+    val shortestDistance = distToJC013WithNames.sortBy(_._2).take(1)
+    println("\nClosest station to JC013 :")
+    shortestDistance.foreach(println)
 
-    //     2. Durée la plus courte
+    /* Résultat :
+        Closest station to JC013 :
+        (City Hall,0.3607075419709036)
+    */
 
+    // 2. Durée la plus courte
+    /*
+        On fait la même chose que pour la distance, mais cette fois au lieu d'utiliser helper.getDistKilometers,
+        on envoie la durée du trajet, calculée en soustrayant les dates de début et de fin du trajet.
+    */
     val timeToJC013 = graph.aggregateMessages[Double](
     triplet => {
         if (triplet.srcAttr.station_id == "JC013" && triplet.dstAttr.station_id == "JC013") {
@@ -140,12 +186,26 @@ object app extends App {
         (station.station_name, count)
     }
 
-    timeToJC013WithNames.sortBy(_._2).take(1).foreach(println)
+    // De la même manière, on trie par ordre croissant et on affiche la première station (la durée la plus courte vers JC013).
+    val shortestTime = timeToJC013WithNames.sortBy(_._2).take(1)
+    println("\nFastest trip to JC013 :")
+    shortestTime.foreach(println)
+
+    /* Résultat :
+        Fastest trip to JC013 :
+        (City Hall,93000.0)
+    */
 
     // 4- Bonus, plus court chemin
+    /*
+        Pour ce bonus, l'objectif est de trouver le plus court chemin entre JC013 et toutes les autres stations du graphe,
+        parfois en passant par d'autres stations si elles ne sont pas directement reliées.
+    */
 
+    // On commence par recréer une classe Station, qui cette fois contient un attribut distance
     case class StationWithDist(station_id: String, station_name: String, station_latitude: Double, station_longitude: Double, distance: Double)
 
+    // On reconstruit un graphe de la même manière que dans la question 1
     val start_stations_with_dist = trips.map(line => line.split(","))
             .map(fields => (fields(4), fields(5), fields(8), fields(9), Double.MaxValue))
     val end_stations_with_dist = trips.map(line => line.split(","))
@@ -159,4 +219,42 @@ object app extends App {
 
     val graphWithDist : Graph[StationWithDist, Trip] =
         Graph(stations_with_distRDD, tripsRDD)
-    //val JC013distZero = graphWithDist.mapVertices((_, vd) => vd.copy(distance = if (vd.station_id == "JC013") 0 else Double.MaxValue))
+
+    // On utilise la fonction Pregel pour calculer le plus court chemin
+    val dist = Pregel(graphWithDist.mapVertices((_, vd) => vd.copy(distance = if (vd.station_id == "JC013") 0.0 else Double.MaxValue)), // on commence par initialiser la distance à Double.MaxValue pour toutes les stations sauf JC013
+        initialMsg=Double.MaxValue, maxIterations=2,
+        activeDirection = EdgeDirection.Out) (
+        /* Tout d'abord, on crée une fonction de mise à jour de la distance suivant le message reçu.
+            On compare la distance actuelle de la station avec la nouvelle distance reçue, et on garde la plus petite.
+            On renvoie une nouvelle Station avec la distance mise à jour.
+        */
+        (_:VertexId, vd:StationWithDist, a:Double) => {
+            StationWithDist(vd.station_id, vd.station_name, vd.station_latitude, vd.station_longitude, math.min(a, vd.distance))
+        },
+        /*
+            Ensuite, on crée une fonction d'envoi de message.
+            Si la distance de la source + la distance entre la source et la destination est plus petite que la distance actuelle de la destination,
+            on envoie un message avec la nouvelle distance. Sinon, on n'envoie rien.
+        */
+        (et:EdgeTriplet[StationWithDist, Trip]) => {
+            val helperDist = helper.getDistKilometers(et.srcAttr.station_longitude, et.srcAttr.station_latitude, et.dstAttr.station_longitude, et.dstAttr.station_latitude)
+            if (et.srcAttr.distance + helperDist < et.dstAttr.distance) {
+                Iterator((et.dstId, et.srcAttr.distance + helperDist))
+            }
+            else {
+                Iterator.empty
+            }
+        },
+        /*
+            Enfin, on crée une fonction de fusion de messages.
+            On garde à chaque fois la distance la plus petite.
+        */
+        (a:Double, b:Double) => {
+            math.min(a,b)
+        }
+    )
+
+    /* Résultat :
+        Nous n'avons pas compris pourquoi mais notre Pregel n'a pas fonctionné, la distance était toujours égale à Double.maxValue...
+    */
+}

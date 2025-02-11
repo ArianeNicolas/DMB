@@ -1,0 +1,23 @@
+[0m[[0m[0mdebug[0m] [0m[0mPackaging /home/kbzz0443/Documents/ESIR/DMB/DMB/TP_2/target/scala-2.13/hello-world_2.13-1.0.jar ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	app$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/kbzz0443/Documents/ESIR/DMB/DMB/TP_2/target/scala-2.13/classes/app$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	HelpfulFunctions.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/kbzz0443/Documents/ESIR/DMB/DMB/TP_2/target/scala-2.13/classes/HelpfulFunctions.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	app$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/kbzz0443/Documents/ESIR/DMB/DMB/TP_2/target/scala-2.13/classes/app$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	app$StationWithDist.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/kbzz0443/Documents/ESIR/DMB/DMB/TP_2/target/scala-2.13/classes/app$StationWithDist.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	app$StationWithDist$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/kbzz0443/Documents/ESIR/DMB/DMB/TP_2/target/scala-2.13/classes/app$StationWithDist$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	app$Trip$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/kbzz0443/Documents/ESIR/DMB/DMB/TP_2/target/scala-2.13/classes/app$Trip$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	app$Trip.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/kbzz0443/Documents/ESIR/DMB/DMB/TP_2/target/scala-2.13/classes/app$Trip.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	app$Station$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/kbzz0443/Documents/ESIR/DMB/DMB/TP_2/target/scala-2.13/classes/app$Station$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	app$Station.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/kbzz0443/Documents/ESIR/DMB/DMB/TP_2/target/scala-2.13/classes/app$Station.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	app.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/kbzz0443/Documents/ESIR/DMB/DMB/TP_2/target/scala-2.13/classes/app.class[0m
+[0m[[0m[0mdebug[0m] [0m[0mDone packaging.[0m
